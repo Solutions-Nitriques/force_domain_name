@@ -1,0 +1,8 @@
+Real simple extension to Symphony CMS
+
+1- Just unzip and put in extension dir
+2- Name the folder *force_domain_name*
+3- Enable just like any other ext
+4- Go into the settings to set the domain name you wanna use
+
+Voila !
