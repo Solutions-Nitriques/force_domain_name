@@ -94,8 +94,8 @@
 				// configured domain
 				$conf_domain = $this->getDomainInUse();
 				
-				// if domains does not match
-				if ($cur_domain != $conf_domain) {
+				// if a domain was configured and domains does not match
+				if (strlen($conf_domain) > 0 && $cur_domain != $conf_domain) {
 					// redirect to good domain
 					// while keeping the url intact
 					
