@@ -6,3 +6,7 @@ Real simple extension to Symphony CMS
 4- Go into the settings to set the domain name you wanna use
 
 Voila !
+
+
+--- Special thanks to robphilp: I made my extension based on the code he wrote for the Symphony 2 Url 
+Router. I put comments in my code in order to remember why rob did it like he did. ---
