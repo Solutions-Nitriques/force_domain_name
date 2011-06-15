@@ -14,8 +14,23 @@
 		 */
 		const REGEXP_DOMAIN = '/^([a-z0-9]([-a-z0-9]*[a-z0-9])?\\.)+((a[cdefgilmnoqrstuwxz]|aero|arpa)|(b[abdefghijmnorstvwyz]|biz)|(c[acdfghiklmnorsuvxyz]|cat|com|coop)|d[ejkmoz]|(e[ceghrstu]|edu)|f[ijkmor]|(g[abdefghilmnpqrstuwy]|gov)|h[kmnrtu]|(i[delmnoqrst]|info|int)|(j[emop]|jobs)|k[eghimnprwyz]|l[abcikrstuvy]|(m[acdghklmnopqrstuvwxyz]|mil|mobi|museum)|(n[acefgilopruz]|name|net)|(om|org)|(p[aefghklmnrstwy]|pro)|qa|r[eouw]|s[abcdeghijklmnortvyz]|(t[cdfghjklmnoprtvwz]|travel)|u[agkmsyz]|v[aceginu]|w[fs]|y[etu]|z[amw])$/i';
 
+		/**
+		 * Key of the domain setting
+		 * @var string
+		 */
 		const SETTING_NAME = 'domain';
+		
+		/**
+		 * Key of the group of setting
+		 * @var string
+		 */
 		const SETTING_GROUP = 'force-domain';
+		
+		/**
+		 * Header to mark the redirection as premanent
+		 * @var string
+		 */
+		const HEADER_MOVE = 'HTTP/1.1 301 Moved Permanently';
 		
 		/**
 		 * Credits for the extension
@@ -28,7 +43,7 @@
 				'author'		=> array(
 					'name'			=> 'Solutions Nitriques',
 					'website'		=> 'http://www.nitriques.com/',
-					'email'			=> 'nico@nitriques.com'
+					'email'			=> 'nico (at) nitriques.com'
 				),
 				'description'	=> 'Really simple ext that force user to a specified domain name',
 				'compatibility' => array(
@@ -62,7 +77,7 @@
 		 * Utiliy function that retreives the value of the setting
 		 * @return string
 		 */
-		public function getDomainInUse($context) {
+		public function getDomainInUse() {
 			return Symphony::Configuration()->get(self::SETTING_NAME, self::SETTING_GROUP);
 		}
 
@@ -72,7 +87,31 @@
 		 * @param array $context
 		 */
 		public function frontendPrePageResolve($context) {
-			
+			// assure we can detect the current domain name
+			if (isset($_SERVER['HTTP_HOST'])) {
+				// domain in use
+				$cur_domain = $_SERVER['HTTP_HOST'];
+				// configured domain
+				$conf_domain = $this->getDomainInUse();
+				
+				// if domains does not match
+				if ($cur_domain != $conf_domain) {
+					// redirect to good domain
+					// while keeping the url intact
+					
+					// get the protocol
+					$protocol = ($_SERVER['HTTPS'] ? 'https' : 'http') . '://';
+					
+					// get the uri
+					$new_location = $_SERVER["REQUEST_URI"];
+					
+					// permanent redirect
+					header(self::HEADER_MOVE);
+					header("Location: $protocol$conf_domain$new_location");
+					// stop process immediatly
+					die();
+				}
+			}
 		}
 		
 		/**
@@ -92,7 +131,7 @@
 			
 			// create the label and the input field
 			$label = Widget::Label();
-			$input = Widget::Input('settings[force-domain][domain]', $this->getDomainInUse($context), 'text');
+			$input = Widget::Input('settings[force-domain][domain]', $this->getDomainInUse(), 'text');
 			
 			// set the input into the label
 			$label->setValue(__('Domain Name'). ' ' . $input->generate());
