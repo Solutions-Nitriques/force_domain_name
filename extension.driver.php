@@ -63,7 +63,7 @@
 		 * @return string
 		 */
 		public function getDomainInUse($context) {
-			return Symphony::Configuration()->get($this->SETTING_NAME, $this->SETTING_GROUP);
+			return Symphony::Configuration()->get(self::SETTING_NAME, self::SETTING_GROUP);
 		}
 
 		/**
@@ -111,15 +111,16 @@
 		 * @param array $context
 		 */
 		public function save($context){
+			//var_dump(self::REGEXP_DOMAIN);die;
 			//var_dump($context['settings']['force-domain']['domain']);die;
 			
-			$domain = $context['settings']['force-domain']['domain'];
+			$domain = $context['settings'][self::SETTING_GROUP][self::SETTING_NAME];
 			
 			// verify it is a good domain
-			if (preg_match($this->REGEXP_DOMAIN, $domain)) {
+			if (preg_match(self::REGEXP_DOMAIN, $domain) == 1) {
 				
 				// set config                    (name, value, group)
-				Symphony::Configuration()->set($this->SETTING_NAME, $domain, $this->SETTING_GROUP);
+				Symphony::Configuration()->set(self::SETTING_NAME, $domain, self::SETTING_GROUP);
 				
 				// save it
 				Administration::instance()->saveConfig();
