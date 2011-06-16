@@ -33,6 +33,13 @@
 		 */
 		const HEADER_MOVE = 'HTTP/1.1 301 Moved Permanently';
 		
+		
+		/**
+		 * private variable for holding the errors encountered when saving
+		 * @var string
+		 */
+		protected $error = '';
+		
 		/**
 		 * Credits for the extension
 		 */
@@ -128,7 +135,16 @@
 
 			// create a paragraph for short intructions
 			$p = new XMLElement('p', __('Define here the domain name you wanna use (without http://)'), array('class' => 'help'));
+			
+			// append intro paragraph
 			$fieldset->appendChild($p);
+			
+			// create a wrapper
+			$wrapper = new XMLElement('div');
+			
+			// wrapper into fieldset
+			$fieldset->appendChild($wrapper);
+			
 			
 			// create the label and the input field
 			$label = Widget::Label();
@@ -138,7 +154,20 @@
 			$label->setValue(__('Domain Name'). ' ' . $input->generate());
 			
 			// append label to field set
-			$fieldset->appendChild($label);
+			$wrapper->appendChild($label);
+			
+			// error management
+			if (strlen($this->error) > 0) {
+				// set css and anchor
+				$wrapper->setAttribute('id', 'error');
+				$wrapper->setAttribute('class', 'invalid');
+				
+				// adds error message
+				$err = new XMLElement('p', $this->error); 
+				
+				// append to $wrapper
+				$wrapper->appendChild($err);
+			}
 
 			
 			// adds the field set to the wrapper
@@ -166,11 +195,15 @@
 				Administration::instance()->saveConfig();
 				
 			} else {
-				// don't save ???
-				// how to mark the field as error ???
-				// please help me on this...
-				echo '"' . $domain . '" is not a valid domain';
-				die;
+				// don't save
+				
+				// set error message
+				$this->error = '"' . $domain . __('" is not a valid domain');
+				
+				//echo $error;die;
+				
+				// add an error into the stack
+				$context['errors'][self::SETTING_GROUP][self::SETTING_NAME] = $this->error;
 			}
 		}
 
