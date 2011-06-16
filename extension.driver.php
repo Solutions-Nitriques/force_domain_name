@@ -96,7 +96,8 @@
 		 */
 		public function frontendPrePageResolve($context) {
 			// assure we can detect the current domain name
-			if (isset($_SERVER['HTTP_HOST'])) {
+			// and that is it not localhost
+			if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] != 'localhost') {
 				// domain in use
 				$cur_domain = $_SERVER['HTTP_HOST'];
 				// configured domain
@@ -148,7 +149,7 @@
 			
 			// create the label and the input field
 			$label = Widget::Label();
-			$input = Widget::Input('settings[force-domain][domain]', $this->getDomainInUse(), 'text');
+			$input = Widget::Input('settings[' . self::SETTING_GROUP . '][' . self::SETTING_NAME .']', $this->getDomainInUse(), 'text');
 			
 			// set the input into the label
 			$label->setValue(__('Domain Name'). ' ' . $input->generate());
@@ -183,6 +184,7 @@
 			//var_dump(self::REGEXP_DOMAIN);die;
 			//var_dump($context['settings']['force-domain']['domain']);die;
 			
+			// gets the input
 			$domain = $context['settings'][self::SETTING_GROUP][self::SETTING_NAME];
 			
 			// verify it is a good domain
@@ -198,7 +200,7 @@
 				// don't save
 				
 				// set error message
-				$this->error = '"' . $domain . __('" is not a valid domain');
+				$this->error = __('"%s" is not a valid domain',  array($domain));
 				
 				//echo $error;die;
 				
