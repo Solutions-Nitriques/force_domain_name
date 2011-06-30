@@ -8,6 +8,8 @@
 	*/
 	class extension_force_domain_name extends Extension {
 		
+		const EXT_NAME = 'Force Domain Name';
+		
 		/**
 		 * Regular expression for validating a domain name
 		 * @var string
@@ -45,7 +47,7 @@
 		 */
 		public function about() {
 			return array(
-				'name'			=> 'Force Domain Name',
+				'name'			=> self::EXT_NAME,
 				'version'		=> '1.0',
 				'release-date'	=> '2011-06-15',
 				'author'		=> array(
@@ -114,11 +116,14 @@
 					// get the uri
 					$new_location = $_SERVER["REQUEST_URI"];
 					
+					$about = $this->about();
+					
 					// permanent redirect
+					header('X-Redirected-By: ' . self::EXT_NAME);
 					header(self::HEADER_MOVE);
 					header("Location: $protocol$conf_domain$new_location");
 					// stop process immediatly
-					die();
+					exit();
 				}
 			}
 		}
