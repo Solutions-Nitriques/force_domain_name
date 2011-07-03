@@ -30,7 +30,7 @@
 		const SETTING_GROUP = 'force-domain';
 		
 		/**
-		 * Header to mark the redirection as premanent
+		 * Header to mark the redirection as permanent (301)
 		 * @var string
 		 */
 		const HEADER_MOVE = 'HTTP/1.1 301 Moved Permanently';
