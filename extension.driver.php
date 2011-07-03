@@ -7,9 +7,9 @@
 	License: MIT
 	*/
 	class extension_force_domain_name extends Extension {
-		
+
 		const EXT_NAME = 'Force Domain Name';
-		
+
 		/**
 		 * Regular expression for validating a domain name
 		 * @var string
@@ -22,26 +22,26 @@
 		 * @var string
 		 */
 		const SETTING_NAME = 'domain';
-		
+
 		/**
 		 * Key of the group of setting
 		 * @var string
 		 */
 		const SETTING_GROUP = 'force-domain';
-		
+
 		/**
 		 * Header to mark the redirection as premanent
 		 * @var string
 		 */
 		const HEADER_MOVE = 'HTTP/1.1 301 Moved Permanently';
-		
-		
+
+
 		/**
 		 * private variable for holding the errors encountered when saving
 		 * @var string
 		 */
 		protected $error = '';
-		
+
 		/**
 		 * Credits for the extension
 		 */
@@ -82,7 +82,7 @@
 				),
 			);
 		}
-		
+
 		/**
 		 * Utiliy function that retreives the value of the setting
 		 * @return string
@@ -104,20 +104,20 @@
 				$cur_domain = $_SERVER['HTTP_HOST'];
 				// configured domain
 				$conf_domain = $this->getDomainInUse();
-				
+
 				// if a domain was configured and domains does not match
 				if (strlen($conf_domain) > 0 && $cur_domain != $conf_domain) {
 					// redirect to good domain
 					// while keeping the url intact
-					
+
 					// get the protocol
 					$protocol = ($_SERVER['HTTPS'] ? 'https' : 'http') . '://';
-					
+
 					// get the uri
 					$new_location = $_SERVER["REQUEST_URI"];
-					
+
 					$about = $this->about();
-					
+
 					// permanent redirect
 					header('X-Redirected-By: ' . self::EXT_NAME);
 					header(self::HEADER_MOVE);
@@ -127,93 +127,7 @@
 				}
 			}
 		}
-		
-		/**
-		 * Delegate handle that adds Custom Preference Fieldsets
-		 * @param string $page
-		 * @param array $context
-		 */
-		public function addCustomPreferenceFieldsets($context) {
-			// creates the field set
-			$fieldset = new XMLElement('fieldset');
-			$fieldset->setAttribute('class', 'settings');
-			$fieldset->appendChild(new XMLElement('legend', __('Force Domain Name')));
-
-			// create a paragraph for short intructions
-			$p = new XMLElement('p', __('Define here the domain name you wanna use (without http://)'), array('class' => 'help'));
-			
-			// append intro paragraph
-			$fieldset->appendChild($p);
-			
-			// create a wrapper
-			$wrapper = new XMLElement('div');
-			
-			// wrapper into fieldset
-			$fieldset->appendChild($wrapper);
-			
-			
-			// create the label and the input field
-			$label = Widget::Label();
-			$input = Widget::Input('settings[' . self::SETTING_GROUP . '][' . self::SETTING_NAME .']', $this->getDomainInUse(), 'text');
-			
-			// set the input into the label
-			$label->setValue(__('Domain Name'). ' ' . $input->generate());
-			
-			// append label to field set
-			$wrapper->appendChild($label);
-			
-			// error management
-			if (strlen($this->error) > 0) {
-				// set css and anchor
-				$wrapper->setAttribute('id', 'error');
-				$wrapper->setAttribute('class', 'invalid');
-				
-				// adds error message
-				$err = new XMLElement('p', $this->error); 
-				
-				// append to $wrapper
-				$wrapper->appendChild($err);
-			}
-
-			
-			// adds the field set to the wrapper
-			$context['wrapper']->appendChild($fieldset);
-		}
-		
-		/**
-		 * Delegate handle that saves the preferences
-		 * @param string $page
-		 * @param array $context
-		 */
-		public function save($context){
-			//var_dump(self::REGEXP_DOMAIN);die;
-			//var_dump($context['settings']['force-domain']['domain']);die;
-			
-			// gets the input
-			$domain = $context['settings'][self::SETTING_GROUP][self::SETTING_NAME];
-			
-			// verify it is a good domain
-			if (preg_match(self::REGEXP_DOMAIN, $domain) == 1) {
-				
-				// set config                    (name, value, group)
-				Symphony::Configuration()->set(self::SETTING_NAME, $domain, self::SETTING_GROUP);
-				
-				// save it
-				Administration::instance()->saveConfig();
-				
-			} else {
-				// don't save
-				
-				// set error message
-				$this->error = __('"%s" is not a valid domain',  array($domain));
-				
-				//echo $error;die;
-				
-				// add an error into the stack
-				$context['errors'][self::SETTING_GROUP][self::SETTING_NAME] = $this->error;
-			}
-		}
 
 	}
-	
+
 ?>
